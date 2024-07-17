@@ -2,17 +2,17 @@ from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
 
 class ApplicationSchemaConfigurationSpecification(BaseModel):
-	jvmConfig: Optional[List[str]]
+	jvmConfig: List[str]
 
 
 class ApplicationSchemaConfiguration(BaseModel):
-	specification: Optional[ApplicationSchemaConfigurationSpecification]
-	exposedPorts: Optional[List[dict]]
-	sharedNamespace: Optional[int]
+	specification: ApplicationSchemaConfigurationSpecification
+	exposedPorts: List[dict]
+	sharedNamespace: int
 
 
 class ApplicationSchemaLog(BaseModel):
-	level: Optional[str]
+	level: str
 
 
 class ApplicationSchemaSettingsSettingaaa(BaseModel):
@@ -24,8 +24,8 @@ class ApplicationSchemaSettingsSettingaab(BaseModel):
 
 
 class ApplicationSchemaSettings(BaseModel):
-	settingAaa: Optional[ApplicationSchemaSettingsSettingaaa]
-	settingAab: Optional[ApplicationSchemaSettingsSettingaab]
+	settingAaa: ApplicationSchemaSettingsSettingaaa
+	settingAab: ApplicationSchemaSettingsSettingaab
 
 
 class ApplicationSchema(BaseModel):

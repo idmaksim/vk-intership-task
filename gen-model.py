@@ -6,16 +6,13 @@ from typing import Any, Dict, List, Optional
 def generate_pydantic_model_from_json(data: Dict[str, Any], class_name: str) -> str:
     class_definitions = []
     
-    def parse_dict(name: str, dictionary: Dict[str, Any], required_fields: List[str] = None) -> str:
+    def parse_dict(name: str, dictionary: Dict[str, Any]) -> str:
         fields = []
         nested_models = []
         
-        if required_fields is None:
-            required_fields = []
         
         for key, value in dictionary.items():
             field_type = "Any"
-            required = key in required_fields
             
             if isinstance(value, str):
                 field_type = "str"
@@ -37,8 +34,8 @@ def generate_pydantic_model_from_json(data: Dict[str, Any], class_name: str) -> 
                 else:
                     field_type = "List[Any]"
             
-            if not required:
-                field_type = f"Optional[{field_type}]"
+            
+            field_type = f"{field_type}"
             
             fields.append(f'{key}: {field_type}')
         
@@ -55,8 +52,7 @@ def generate_pydantic_model_from_json(data: Dict[str, Any], class_name: str) -> 
     kind_name = data['kind'].capitalize()
     class_name = f"{kind_name}Schema" 
     
-    required_fields = list(data.keys())
-    parse_dict(class_name, data, required_fields)
+    parse_dict(class_name, data)
     
     return "\n\n".join(class_definitions)
 
@@ -79,7 +75,7 @@ def main(json_data_path: str, output_file_path: str):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python gen-model.py <json_data_path> <output_file_path>")
+        print("Usage: python generate_model.py <json_data_path> <output_file_path>")
     else:
         json_data_path = sys.argv[1]
         output_file_path = sys.argv[2]
