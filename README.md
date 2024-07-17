@@ -2,7 +2,8 @@
 ## A small note
 В задании указано, что нужно валидировать в соответствии с [json-schema](https://json-schema.org),
 но в примере указан yaml файл с другими полями. Эта утилита работает с файлами, которые были
-в примере задания. Названия полей совпадают, но файл типа json. [Далее](#generating-pydantic-schema-from-json) это будет наглядно показано
+в примере задания. Названия полей совпадают, но файл типа json. [Далее](#generating-pydantic-schema-from-json) это будет наглядно показано. 
+На самом деле присутствуют неточные формулировки, по которым бы хотелось иметь возможность задавать вопросы.
 ## Feautures
 - Pydantic schema generating from JSON
 - CRUD generating from pydantic schema
