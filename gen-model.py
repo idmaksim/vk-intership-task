@@ -1,59 +1,56 @@
 import sys
 import json
-from typing import Any, Dict, List, Optional
-
+from typing import Any, Dict
 
 def generate_pydantic_model_from_json(data: Dict[str, Any], class_name: str) -> str:
     class_definitions = []
-    
+
     def parse_dict(name: str, dictionary: Dict[str, Any]) -> str:
         fields = []
         nested_models = []
-        
-        
-        for key, value in dictionary.items():
-            field_type = "Any"
-            
+
+        def get_type(value):
             if isinstance(value, str):
-                field_type = "str"
-            elif isinstance(value, int):
-                field_type = "int"
-            elif isinstance(value, float):
-                field_type = "float"
+                return "str"
             elif isinstance(value, bool):
-                field_type = "bool"
+                return "bool"
+            elif isinstance(value, int):
+                return "int"
+            elif isinstance(value, float):
+                return "float"
             elif isinstance(value, dict):
                 nested_class_name = f"{name}{key.capitalize()}"
                 nested_model = parse_dict(nested_class_name, value)
                 nested_models.append(nested_model)
-                field_type = nested_class_name
+                return nested_class_name
             elif isinstance(value, list):
                 if value:
-                    first_item_type = type(value[0]).__name__
-                    field_type = f"List[{first_item_type}]"
+                    first_item_type = get_type(value[0])
+                    return f"List[{first_item_type}]"
                 else:
-                    field_type = "List[Any]"
-            
-            
-            field_type = f"{field_type}"
-            
+                    return "List[Any]"
+            else:
+                return "Any"
+
+        for key, value in dictionary.items():
+            field_type = get_type(value)
             fields.append(f'{key}: {field_type}')
-        
-        if len(fields) > 0:
+
+        if fields:
             fields_str = "\n\t".join(fields)
         else:
             fields_str = '...'
-        
+
         class_definition = f"class {name}(BaseModel):\n\t{fields_str}\n"
         class_definitions.append(class_definition)
-        
+
         return name
-    
+
     kind_name = data['kind'].capitalize()
-    class_name = f"{kind_name}Schema" 
-    
+    class_name = f"{kind_name}Schema"
+
     parse_dict(class_name, data)
-    
+
     return "\n\n".join(class_definitions)
 
 def write_model_to_file(model: str, file_path: str):
@@ -65,10 +62,10 @@ def write_model_to_file(model: str, file_path: str):
 def main(json_data_path: str, output_file_path: str):
     with open(json_data_path, 'r') as file:
         data = json.load(file)
-    
+
     if "kind" not in data:
         raise ValueError("JSON data must contain a 'kind' field.")
-    
+
     model = generate_pydantic_model_from_json(data, class_name=data['kind'])
     write_model_to_file(model, output_file_path)
     print(f"Pydantic model has been written to {output_file_path}")
