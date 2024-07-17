@@ -79,7 +79,7 @@ def main(json_data_path: str, output_file_path: str):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python generate_model.py <json_data_path> <output_file_path>")
+        print("Usage: python gen-model.py <json_data_path> <output_file_path>")
     else:
         json_data_path = sys.argv[1]
         output_file_path = sys.argv[2]
