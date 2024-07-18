@@ -1,10 +1,8 @@
-import sys
-import json
 from typing import Any, Dict
+
 
 def generate_pydantic_model_from_json(data: Dict[str, Any], class_name: str) -> str:
     class_definitions = []
-
     def parse_dict(name: str, dictionary: Dict[str, Any]) -> str:
         fields = []
         nested_models = []
@@ -53,27 +51,9 @@ def generate_pydantic_model_from_json(data: Dict[str, Any], class_name: str) -> 
 
     return "\n\n".join(class_definitions)
 
+
 def write_model_to_file(model: str, file_path: str):
     with open(file_path, 'w') as file:
         file.write("from pydantic import BaseModel\n")
         file.write("from typing import Any, Dict, List, Optional\n\n")
         file.write(model)
-
-def main(json_data_path: str, output_file_path: str):
-    with open(json_data_path, 'r') as file:
-        data = json.load(file)
-
-    if "kind" not in data:
-        raise ValueError("JSON data must contain a 'kind' field.")
-
-    model = generate_pydantic_model_from_json(data, class_name=data['kind'])
-    write_model_to_file(model, output_file_path)
-    print(f"Pydantic model has been written to {output_file_path}")
-
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python gen-model.py <json_data_path> <output_file_path>")
-    else:
-        json_data_path = sys.argv[1]
-        output_file_path = sys.argv[2]
-        main(json_data_path, output_file_path)
