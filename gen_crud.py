@@ -2,48 +2,51 @@ import json
 import sys
 
 template = '''from fastapi import FastAPI, HTTPException
-import uuid
+from uuid import UUID
+
 
 app = FastAPI()
 
-database = {{}}
 
 {configuration_routes}
 
 {settings_routes}
-
 @app.put("/{{kind}}/{{uuid}}/state")
-async def update_state(kind: str, uuid: str, state_update: dict):
-    if uuid not in database:
-        raise HTTPException(status_code=404, detail="Item not found")
-    database[uuid]['state'] = state_update.get('state')
-    return database[uuid]
+async def update_state(
+    uuid: UUID, 
+    new_state: str
+):
+    ...
 
+    
 @app.delete("/{{kind}}/{{uuid}}/")
-async def delete_item(kind: str, uuid: str):
-    if uuid not in database:
-        raise HTTPException(status_code=404, detail="Item not found")
-    del database[uuid]
-    return {{"detail": "Item deleted"}}
+async def delete_item(
+    uuid: UUID
+):
+    ...
 
+    
 @app.get("/{{kind}}/{{uuid}}")
-async def read_item(kind: str, uuid: str):
-    if uuid not in database:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return database[uuid]
+async def read_item(
+    uuid: UUID
+):
+    ...
 
+    
 @app.get("/{{kind}}/{{uuid}}/state")
-async def read_state(kind: str, uuid: str):
-    if uuid not in database:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return {{"state": database[uuid].get('state')}}
+async def read_state(
+    uuid: UUID
+):
+    ...
 
+    
 @app.post("/{{kind}}/")
-async def create_item(kind: str, item: dict):
-    uuid = str(uuid.uuid4())
-    database[uuid] = item
-    return {{"id": uuid}}
+async def create_item(
+    item
+):
+    ...
 
+    
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
@@ -52,17 +55,15 @@ if __name__ == "__main__":
 def create_put_route(kind, uuid, field, subfield):
     route = f'''
 @app.put("/{kind}/{uuid}/{field}/{subfield}/")
-async def update_{field}_{subfield}(kind: str, uuid: str, value: dict):
-    if uuid not in database:
-        raise HTTPException(status_code=404, detail="Item not found")
-    if '{field}' not in database[uuid]:
-        raise HTTPException(status_code=404, detail="{field} not found")
-    database[uuid]['{field}']['{subfield}'] = value
-    return database[uuid]
+async def update_{field}_{subfield}(
+    uuid: UUID, 
+    item
+):
+    ...
 '''
     return route
 
-def generate_fastapi_code(json_data, output_path):
+def gen_crud(json_data, output_path):
     kind = json_data.get("kind", "application")
 
     configuration_routes = ""
@@ -90,7 +91,7 @@ def main(input_path, output_path):
     with open(input_path, 'r') as f:
         json_data = json.load(f)
     
-    generate_fastapi_code(json_data, output_path)
+    gen_crud(json_data, output_path)
     print(f"FastAPI code generated successfully in {output_path}")
 
 if __name__ == "__main__":

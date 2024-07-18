@@ -99,5 +99,10 @@ class ApplicationSchema(BaseModel):
 
 ### Command line
 ```shell
-python gen-model.py path/to/your/json/sample.json path/to/your/output/output.py
+python gen.py model path/to/your/json/sample.json path/to/your/output/output.py
+```
+
+### Command line
+```shell
+python gen.py crud path/to/your/json/sample.json path/to/your/output/routers.py
 ```
